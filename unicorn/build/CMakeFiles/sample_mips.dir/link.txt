@@ -1,0 +1,1 @@
+/usr/bin/cc -O3  -rdynamic CMakeFiles/sample_mips.dir/samples/sample_mips.c.o -o sample_mips  -Wl,-rpath,/home/whale/20230817/cannon/unicorn/build libunicorn.so.1 

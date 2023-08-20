@@ -1,0 +1,12 @@
+/home/whale/20230817/cannon/unicorn/build/CMakeFiles/mips-softmmu.dir
+/home/whale/20230817/cannon/unicorn/build/CMakeFiles/mipsel-softmmu.dir
+/home/whale/20230817/cannon/unicorn/build/CMakeFiles/mips64-softmmu.dir
+/home/whale/20230817/cannon/unicorn/build/CMakeFiles/mips64el-softmmu.dir
+/home/whale/20230817/cannon/unicorn/build/CMakeFiles/unicorn.dir
+/home/whale/20230817/cannon/unicorn/build/CMakeFiles/sample_mips.dir
+/home/whale/20230817/cannon/unicorn/build/CMakeFiles/edit_cache.dir
+/home/whale/20230817/cannon/unicorn/build/CMakeFiles/rebuild_cache.dir
+/home/whale/20230817/cannon/unicorn/build/CMakeFiles/list_install_components.dir
+/home/whale/20230817/cannon/unicorn/build/CMakeFiles/install.dir
+/home/whale/20230817/cannon/unicorn/build/CMakeFiles/install/local.dir
+/home/whale/20230817/cannon/unicorn/build/CMakeFiles/install/strip.dir
