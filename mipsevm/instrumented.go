@@ -1,9 +1,7 @@
 package main
 
 import (
-	"fmt"
 	"io"
-	//"fmt"
 )
 
 type PreimageOracle interface {
@@ -111,10 +109,9 @@ func (m *InstrumentedState) StepTrace() (wit *traceState, err error) {
 		Step:      m.state.Step,
 	}
 
-	//wit.PreimageKey = m.state.PreimageKey
 	wit.MemRoot = m.state.Memory.MerkleRoot()
 
-	wit.insn_proof = m.state.Memory.MerkleProof(m.state.PC)
+	wit.Insn_proof = m.state.Memory.MerkleProof(m.state.PC)
 	m.memProofEnabled = true
 
 	err = m.mipsStep()
@@ -123,13 +120,9 @@ func (m *InstrumentedState) StepTrace() (wit *traceState, err error) {
 		return nil, err
 	}
 
-	wit.memory_proof = m.memProof
-	//wit.MemProof.PreimageOffset = m.lastPreimageOffset
-	//wit.MemProof.PreimageKey = m.lastPreimageKey
-	//wit.MemProof.PreimageValue = m.lastPreimage[0:16]
+	wit.Memory_proof = m.memProof
 
-	fmt.Printf("trace: %+v\n", wit)
-	fmt.Println(wit)
+	wit.insertToDB()
 	return
 }
 
