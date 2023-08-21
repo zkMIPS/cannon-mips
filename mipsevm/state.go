@@ -37,35 +37,27 @@ type State struct {
 	LastHint hexutil.Bytes `json:"lastHint,omitempty"`
 }
 
-type traceMem struct {
-	insn_proof [28 * 32]byte
-	memory_proof [28 * 32]byte
-	//PreimageKey  [32]byte `json:"preimageKey"`
-	//PreimageOffset uint32      `json:"preimageOffset"` // note that the offset includes the 8-byte length prefix
-	//PreimageValue [32]uint8
-}
-
 type traceState struct {
-	Step uint64 `json:"step"`
+	Step   uint64 `json:"cycle"`
 	PC     uint32 `json:"pc"`
 	NextPC uint32 `json:"nextPC"`
 
-	LO     uint32 `json:"lo"`
-	HI     uint32 `json:"hi"`
+	LO uint32 `json:"lo"`
+	HI uint32 `json:"hi"`
 
-	Registers [32]uint32 `json:"registers"`
+	Registers [32]uint32 `json:"regs"`
 
 	//PreimageKey   [32]byte `json:"preimageKey"`
 	//PreimageOffset uint32      `json:"preimageOffset"` // note that the offset includes the 8-byte length prefix
 
-	Heap   uint32 `json:"heap"` // to handle mmap growth
+	Heap uint32 `json:"heap"` // to handle mmap growth
 
-	ExitCode uint8 `json:"exit"`
-	Exited   bool  `json:"exited"`
-	MemRoot  [32]uint8
+	ExitCode uint8     `json:"exitCode"`
+	Exited   bool      `json:"exited"`
+	MemRoot  [32]uint8 `json:"memRoot"`
 
-	MemProof traceMem
-
+	insn_proof   [28 * 32]byte `json:"insn_proof"`
+	memory_proof [28 * 32]byte `json:"mem_proof"`
 }
 
 func (s *State) EncodeWitness() []byte {

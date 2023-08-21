@@ -114,7 +114,7 @@ func (m *InstrumentedState) StepTrace() (wit *traceState, err error) {
 	//wit.PreimageKey = m.state.PreimageKey
 	wit.MemRoot = m.state.Memory.MerkleRoot()
 
-	wit.MemProof.insn_proof = m.state.Memory.MerkleProof(m.state.PC)
+	wit.insn_proof = m.state.Memory.MerkleProof(m.state.PC)
 	m.memProofEnabled = true
 
 	err = m.mipsStep()
@@ -123,7 +123,7 @@ func (m *InstrumentedState) StepTrace() (wit *traceState, err error) {
 		return nil, err
 	}
 
-	wit.MemProof.memory_proof = m.memProof
+	wit.memory_proof = m.memProof
 	//wit.MemProof.PreimageOffset = m.lastPreimageOffset
 	//wit.MemProof.PreimageKey = m.lastPreimageKey
 	//wit.MemProof.PreimageValue = m.lastPreimage[0:16]
