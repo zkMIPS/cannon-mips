@@ -1,23 +1,28 @@
-module mipsevm
+module github.com/zkMIPS/cannon-mips/mipsevm
 
-go 1.17
-
-replace github.com/ethereum/go-ethereum => ../minigeth
-
-replace github.com/unicorn-engine/unicorn => ../unicorn
+go 1.21.0
 
 require (
-	github.com/ethereum/go-ethereum v1.10.8
-	github.com/fatih/color v1.13.0
-	github.com/unicorn-engine/unicorn v0.0.0-20211005173419-3fadb5aa5aad
+	github.com/ethereum-optimism/optimism v1.1.2
+	//github.com/ethereum-optimism/optimism/op-bindings v0.10.14 // indirect
+	github.com/ethereum/go-ethereum v1.11.6
+	github.com/stretchr/testify v1.8.1
+	pedersen-go v0.0.0
 )
 
 require (
-	github.com/btcsuite/btcd v0.22.0-beta // indirect
+	github.com/btcsuite/btcd/btcec/v2 v2.2.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/holiman/uint256 v1.2.0 // indirect
-	github.com/mattn/go-colorable v0.1.9 // indirect
-	github.com/mattn/go-isatty v0.0.14 // indirect
-	golang.org/x/crypto v0.0.0-20210817164053-32db794688a5 // indirect
-	golang.org/x/sys v0.0.0-20210630005230-0f9fa26af87c // indirect
+	github.com/dchest/blake512 v1.0.0 // indirect
+	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.1.0 // indirect
+	github.com/go-stack/stack v1.8.1 // indirect
+	github.com/holiman/uint256 v1.2.2-0.20230321075855-87b91420868c // indirect
+	github.com/pkg/errors v0.9.1 // indirect
+	github.com/pmezard/go-difflib v1.0.0 // indirect
+	golang.org/x/crypto v0.8.0 // indirect
+	golang.org/x/sys v0.7.0 // indirect
+	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
+	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
+
+replace pedersen-go => ../pedersen-go
