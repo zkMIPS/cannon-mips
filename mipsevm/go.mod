@@ -1,6 +1,6 @@
 module github.com/zkMIPS/cannon-mips/mipsevm
 
-go 1.21.0
+go 1.21
 
 require (
 	github.com/ethereum-optimism/optimism v1.1.2
