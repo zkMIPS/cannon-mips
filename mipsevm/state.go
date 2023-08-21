@@ -2,6 +2,13 @@ package main
 
 import (
 	"encoding/binary"
+	"fmt"
+	"strings"
+
+	//"database/sql"
+	"encoding/json"
+
+	_ "github.com/lib/pq"
 
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/ethereum/go-ethereum/common/hexutil"
@@ -56,8 +63,29 @@ type traceState struct {
 	Exited   bool      `json:"exited"`
 	MemRoot  [32]uint8 `json:"memRoot"`
 
-	insn_proof   [28 * 32]byte `json:"insn_proof"`
-	memory_proof [28 * 32]byte `json:"mem_proof"`
+	Insn_proof   [28 * 32]uint8 `json:"insn_proof"`
+	Memory_proof [28 * 32]uint8 `json:"mem_proof"`
+}
+
+func (s *traceState) insertToDB() {
+
+	b, err := json.Marshal(s)
+	if err != nil {
+		panic(err)
+	}
+
+	str := string(b)
+
+	str = strings.ReplaceAll(str, ":", ":\"")
+	str = strings.ReplaceAll(str, ",", "\",\"")
+	str = strings.ReplaceAll(str, "]\"", "\"]")
+	str = strings.ReplaceAll(str, "\"[", "[\"")
+	str = strings.ReplaceAll(str, "\"\"", "\"")
+	str = strings.ReplaceAll(str, "\"false\"", "false")
+	str = strings.ReplaceAll(str, "\"true\"", "true")
+	str = strings.ReplaceAll(str, "]}", "\"]}")
+
+	fmt.Println(str)
 }
 
 func (s *State) EncodeWitness() []byte {

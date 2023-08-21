@@ -10,6 +10,8 @@ require (
 	pedersen-go v0.0.0
 )
 
+require github.com/lib/pq v1.10.9
+
 require (
 	github.com/btcsuite/btcd/btcec/v2 v2.2.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
