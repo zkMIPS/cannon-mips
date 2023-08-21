@@ -1,0 +1,3 @@
+[submodule "pedersen-go"]
+	path = pedersen-go
+	url = https://github.com/henryfour/pedersen-go.git
