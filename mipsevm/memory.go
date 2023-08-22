@@ -8,8 +8,9 @@ import (
 	"math/bits"
 	"sort"
 
-	"github.com/ethereum/go-ethereum/crypto"
+	//"github.com/ethereum/go-ethereum/crypto"
 	//"pedersen-go"
+	"golang.org/x/crypto/blake2s"
 )
 
 // Note: 2**12 = 4 KiB, the min phys page size in the Go runtime.
@@ -23,7 +24,12 @@ const (
 )
 
 func HashPair(left, right [32]byte) [32]byte {
-	out := crypto.Keccak256Hash(left[:], right[:])
+	//out := crypto.Keccak256Hash(left[:], right[:])
+
+	data := append(left[:], right[:]...)
+
+	out := blake2s.Sum256(data)
+
 	/*
 		point, err := pedersen.PedersenHashBytes("test", left[:], right[:])
 

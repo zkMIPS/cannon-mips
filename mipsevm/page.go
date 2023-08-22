@@ -4,7 +4,7 @@ import (
 	"encoding/hex"
 	"fmt"
 
-	"github.com/ethereum/go-ethereum/crypto"
+	"golang.org/x/crypto/blake2s"
 	//"pedersen-go"
 )
 
@@ -56,7 +56,8 @@ func (p *CachedPage) MerkleRoot() [32]byte {
 		if p.Ok[j] {
 			continue
 		}
-		p.Cache[j] = crypto.Keccak256Hash(p.Data[i : i+64])
+		//p.Cache[j] = crypto.Keccak256Hash(p.Data[i : i+64])
+		p.Cache[j] = blake2s.Sum256(p.Data[i : i+64])
 		/*point, err := pedersen.PedersenHashBytes("test", p.Data[i:i+64])
 
 		if err != nil {
