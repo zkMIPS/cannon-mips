@@ -1,18 +1,10 @@
 SHELL := /bin/bash
 
-build: submodules minigeth_mips minigeth_prefetch mipsevm
+build: minigeth_mips minigeth_prefetch mipsevm
 .PHONY: build
 
-submodules:
-	# CI will checkout submodules on its own (and fails on these commands)
-	if [[ -z "$$GITHUB_ENV" ]]; then \
-		git submodule init; \
-		git submodule update; \
-	fi
-.PHONY: submodules
-
-
 minigeth_mips:
+	chmod +x mipsevm/build.sh
 	cd mipsevm && ./build.sh
 .PHONY: minigeth_mips
 
