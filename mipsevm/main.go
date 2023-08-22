@@ -73,6 +73,13 @@ func start_elf(path string) {
 	goState.SetBlockRoot(block_root)
 	//goState.SetDebug(true)
 
+	err = InitDB()
+
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
 	start := time.Now()
 	for !goState.IsExited() {
 
