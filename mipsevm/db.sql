@@ -1,5 +1,5 @@
-DROP TABLE IF EXISTS t_traces;
-CREATE TABLE t_traces
+DROP TABLE IF EXISTS f_traces;
+CREATE TABLE f_traces
 (
     f_id           bigserial PRIMARY KEY,
     f_trace        jsonb                    NOT NULL,
