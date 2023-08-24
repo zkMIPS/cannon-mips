@@ -11,14 +11,15 @@ import (
 )
 
 var (
-	h       bool
-	block   string
-	program string
+	h          bool
+	block      string
+	program    string
+	totalsteps uint
 )
 
 func usage() {
 	fmt.Fprintf(os.Stderr, `
-Usage: mipsevm [-b block] [-e filename]
+Usage: mipsevm [-b block] [-e filename] [-s stepNum]
 
 Options:
 `)
@@ -30,6 +31,7 @@ func init() {
 
 	flag.StringVar(&block, "b", "", "blocknum for minigeth")
 	flag.StringVar(&program, "e", "", "whole program elf path")
+	flag.UintVar(&totalsteps, "s", 0xFFFFFFFF, "program steps")
 
 	// 改变默认的 Usage
 	flag.Usage = usage
@@ -81,6 +83,7 @@ func start_elf(path string) {
 	}
 
 	start := time.Now()
+	step := uint(0)
 	for !goState.IsExited() {
 
 		_, err = goState.StepTrace()
@@ -88,6 +91,11 @@ func start_elf(path string) {
 		if err != nil {
 			fmt.Println(err)
 			return
+		}
+
+		step++
+		if step >= totalsteps {
+			break
 		}
 
 	}

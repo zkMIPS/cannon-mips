@@ -112,12 +112,13 @@ func (a *traceStateJson) Scan(value interface{}) error {
 }
 
 func InitDB() (err error) {
-	db, err := sql.Open("postgres", "postgres://postgres:postgres@localhost/postgres")
+	// ec2-46-51-227-198.ap-northeast-1.compute.amazonaws.com
+	db, err := sql.Open("postgres", "sslmode=disable user=postgres password=mipszero host=46.51.227.198 port=5432 dbname=zkmips")
 	if err != nil {
 		return err
 	}
 
-	_, err = db.Exec("TRUNCATE traces")
+	_, err = db.Exec("TRUNCATE f_traces")
 
 	if err != nil {
 		return err
@@ -151,7 +152,7 @@ func (s *traceState) insertToDB() {
 		json.Memory_proof[i] = strconv.FormatUint(uint64(s.Memory_proof[i]), 10)
 	}
 
-	_, err := DB.Exec("INSERT INTO traces (f_trace) VALUES($1)", json)
+	_, err := DB.Exec("INSERT INTO f_traces (f_trace) VALUES($1)", json)
 
 	if err != nil {
 		log.Fatal(err)
