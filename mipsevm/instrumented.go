@@ -33,6 +33,7 @@ type InstrumentedState struct {
 	ignored_steps uint64
 	ignored       bool
 	saved_step    uint64
+	memRoot       [32]uint8
 }
 
 const (
@@ -100,11 +101,15 @@ func (m *InstrumentedState) Step(proof bool) (wit *StepWitness, err error) {
 	return
 }
 
-func (m *InstrumentedState) StepTrace() (wit *traceState, err error) {
+func (m *InstrumentedState) InitialMemRoot() {
+	m.memRoot = m.state.Memory.MerkleRoot()
+}
+
+func (m *InstrumentedState) StepTrace() (wit *trace, err error) {
 	m.lastMemAccess = ^uint32(0)
 	m.lastPreimageOffset = ^uint32(0)
 
-	wit = &traceState{
+	curState := &traceState{
 		PC:        m.state.PC,
 		NextPC:    m.state.NextPC,
 		HI:        m.state.HI,
@@ -116,7 +121,11 @@ func (m *InstrumentedState) StepTrace() (wit *traceState, err error) {
 		Step:      m.state.Step,
 	}
 
-	wit.MemRoot = m.state.Memory.MerkleRoot()
+	wit = &trace{
+		curState: curState,
+	}
+
+	wit.curState.MemRoot = m.memRoot
 
 	wit.Insn_proof = m.state.Memory.MerkleProof(m.state.PC)
 	m.memProofEnabled = true
@@ -127,8 +136,21 @@ func (m *InstrumentedState) StepTrace() (wit *traceState, err error) {
 		return nil, err
 	}
 
+	m.memRoot = m.state.Memory.MerkleRoot()
 	wit.Memory_proof = m.memProof
+	wit.nextState = &traceState{
+		PC:        m.state.PC,
+		NextPC:    m.state.NextPC,
+		HI:        m.state.HI,
+		LO:        m.state.LO,
+		Heap:      m.state.Heap,
+		Registers: m.state.Registers,
+		ExitCode:  m.state.ExitCode,
+		Exited:    m.state.Exited,
+		Step:      m.state.Step,
+	}
 
+	wit.nextState.MemRoot = m.memRoot
 	wit.insertToDB()
 	return
 }

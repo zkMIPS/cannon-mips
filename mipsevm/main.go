@@ -73,6 +73,7 @@ func start_elf(path string) {
 	goState := NewInstrumentedState(state, nil, io.MultiWriter(&stdOutBuf, os.Stdout), io.MultiWriter(&stdErrBuf, os.Stderr))
 
 	goState.SetBlockRoot(block_root)
+	goState.InitialMemRoot()
 	//goState.SetDebug(true)
 
 	err = InitDB()
