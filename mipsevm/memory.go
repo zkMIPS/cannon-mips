@@ -5,12 +5,12 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"math/big"
 	"math/bits"
 	"sort"
 
-	//"github.com/ethereum/go-ethereum/crypto"
-	//"pedersen-go"
-	"golang.org/x/crypto/blake2s"
+	//"golang.org/x/crypto/blake2s"
+	"github.com/iden3/go-iden3-crypto/poseidon"
 )
 
 // Note: 2**12 = 4 KiB, the min phys page size in the Go runtime.
@@ -26,19 +26,23 @@ const (
 func HashPair(left, right [32]byte) [32]byte {
 	//out := crypto.Keccak256Hash(left[:], right[:])
 
-	data := append(left[:], right[:]...)
+	a := convertBytesToFeild(left[:])
+	b := convertBytesToFeild(right[:])
 
-	out := blake2s.Sum256(data)
+	outInt, err := poseidon.Hash([]*big.Int{a, b})
+	if err != nil {
+		fmt.Println(err)
+	}
 
-	/*
-		point, err := pedersen.PedersenHashBytes("test", left[:], right[:])
+	bytes := outInt.Bytes()
+	out := [32]byte{}
 
-		if err != nil {
-			fmt.Println(err)
-		}
+	if len(bytes) >= 32 {
+		copy(out[:], bytes[0:32])
+	} else {
+		copy(out[32-len(bytes):], bytes)
+	}
 
-		out := pedersen.PackPoint(point)
-	*/
 	return out
 }
 
