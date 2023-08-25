@@ -2,6 +2,7 @@ package main
 
 import (
 	"io"
+	"math/rand"
 )
 
 type PreimageOracle interface {
@@ -105,7 +106,7 @@ func (m *InstrumentedState) InitialMemRoot() {
 	m.memRoot = m.state.Memory.MerkleRoot()
 }
 
-func (m *InstrumentedState) StepTrace() (wit *trace, err error) {
+func (m *InstrumentedState) StepTrace(rate int) (wit *trace, err error) {
 	m.lastMemAccess = ^uint32(0)
 	m.lastPreimageOffset = ^uint32(0)
 
@@ -151,7 +152,9 @@ func (m *InstrumentedState) StepTrace() (wit *trace, err error) {
 	}
 
 	wit.nextState.MemRoot = m.memRoot
-	wit.insertToDB()
+	if rand.Intn(100000) < rate {
+		wit.insertToDB()
+	}
 	return
 }
 

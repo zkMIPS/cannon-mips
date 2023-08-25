@@ -15,11 +15,12 @@ var (
 	block      string
 	program    string
 	totalsteps uint
+	rate       int
 )
 
 func usage() {
 	fmt.Fprintf(os.Stderr, `
-Usage: mipsevm [-b block] [-e filename] [-s stepNum]
+Usage: mipsevm [-b block] [-e filename] [-s stepNum] [-r rate]
 
 Options:
 `)
@@ -32,6 +33,7 @@ func init() {
 	flag.StringVar(&block, "b", "", "blocknum for minigeth")
 	flag.StringVar(&program, "e", "", "whole program elf path")
 	flag.UintVar(&totalsteps, "s", 0xFFFFFFFF, "program steps")
+	flag.IntVar(&rate, "r", 100000, "randomly generate trace rate (1/100000)")
 
 	// 改变默认的 Usage
 	flag.Usage = usage
@@ -87,7 +89,7 @@ func start_elf(path string) {
 	step := uint(0)
 	for !goState.IsExited() {
 
-		_, err = goState.StepTrace()
+		_, err = goState.StepTrace(rate)
 
 		if err != nil {
 			fmt.Println(err)
