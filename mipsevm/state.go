@@ -64,12 +64,17 @@ type traceState struct {
 	ExitCode uint8     `json:"exitCode"`
 	Exited   bool      `json:"exited"`
 	MemRoot  [32]uint8 `json:"memRoot"`
+}
+
+type trace struct {
+	curState *traceState `json:"cur_state"`
 
 	Insn_proof   [28 * 32]uint8 `json:"insn_proof"`
 	Memory_proof [28 * 32]uint8 `json:"mem_proof"`
+	nextState    *traceState    `json:"next_state"`
 }
 
-type traceStateJson struct {
+type traceJson struct {
 	Step   string `json:"cycle"`
 	PC     string `json:"pc"`
 	NextPC string `json:"nextPC"`
@@ -84,25 +89,42 @@ type traceStateJson struct {
 
 	Heap string `json:"heap"` // to handle mmap growth
 
-	ExitCode string     `json:"exitCode"`
-	Exited   bool       `json:"exited"`
-	MemRoot  [32]string `json:"memRoot"`
-
+	ExitCode     string          `json:"exitCode"`
+	Exited       bool            `json:"exited"`
+	MemRoot      [32]string      `json:"memRoot"`
 	Insn_proof   [28 * 32]string `json:"insn_proof"`
 	Memory_proof [28 * 32]string `json:"mem_proof"`
+
+	NewStep   string `json:"newCycle"`
+	NewPC     string `json:"newPc"`
+	NewNextPC string `json:"newNextPC"`
+
+	NewLO string `json:"newLo"`
+	NewHI string `json:"newHi"`
+
+	NewRegisters [32]string `json:"newRegs"`
+
+	//PreimageKey   [32]byte `json:"preimageKey"`
+	//PreimageOffset uint32      `json:"preimageOffset"` // note that the offset includes the 8-byte length prefix
+
+	NewHeap string `json:"newHeap"` // to handle mmap growth
+
+	NewExitCode string     `json:"newExitCode"`
+	NewExited   bool       `json:"newExited"`
+	NewMemRoot  [32]string `json:"newMemRoot"`
 }
 
 var (
 	DB *sql.DB
 )
 
-func (a traceStateJson) Value() (driver.Value, error) {
+func (a traceJson) Value() (driver.Value, error) {
 	return json.Marshal(a)
 }
 
 // Make the Attrs struct implement the sql.Scanner interface. This method
 // simply decodes a JSON-encoded value into the struct fields.
-func (a *traceStateJson) Scan(value interface{}) error {
+func (a *traceJson) Scan(value interface{}) error {
 	b, ok := value.([]byte)
 	if !ok {
 		return errors.New("type assertion to []byte failed")
@@ -128,23 +150,36 @@ func InitDB() (err error) {
 	return nil
 }
 
-func (s *traceState) insertToDB() {
-	json := &traceStateJson{
-		Step:   strconv.FormatUint(uint64(s.Step), 10),
-		PC:     strconv.FormatUint(uint64(s.PC), 10),
-		NextPC: strconv.FormatUint(uint64(s.NextPC), 10),
+func (s *trace) insertToDB() {
+	json := &traceJson{
+		Step:   strconv.FormatUint(uint64(s.curState.Step), 10),
+		PC:     strconv.FormatUint(uint64(s.curState.PC), 10),
+		NextPC: strconv.FormatUint(uint64(s.curState.NextPC), 10),
 
-		LO:   strconv.FormatUint(uint64(s.LO), 10),
-		HI:   strconv.FormatUint(uint64(s.HI), 10),
-		Heap: strconv.FormatUint(uint64(s.Heap), 10),
+		LO:   strconv.FormatUint(uint64(s.curState.LO), 10),
+		HI:   strconv.FormatUint(uint64(s.curState.HI), 10),
+		Heap: strconv.FormatUint(uint64(s.curState.Heap), 10),
 
-		ExitCode: strconv.FormatUint(uint64(s.ExitCode), 10),
-		Exited:   s.Exited,
+		ExitCode: strconv.FormatUint(uint64(s.curState.ExitCode), 10),
+		Exited:   s.curState.Exited,
+
+		NewStep:   strconv.FormatUint(uint64(s.nextState.Step), 10),
+		NewPC:     strconv.FormatUint(uint64(s.nextState.PC), 10),
+		NewNextPC: strconv.FormatUint(uint64(s.nextState.NextPC), 10),
+
+		NewLO:   strconv.FormatUint(uint64(s.nextState.LO), 10),
+		NewHI:   strconv.FormatUint(uint64(s.nextState.HI), 10),
+		NewHeap: strconv.FormatUint(uint64(s.nextState.Heap), 10),
+
+		NewExitCode: strconv.FormatUint(uint64(s.nextState.ExitCode), 10),
+		NewExited:   s.nextState.Exited,
 	}
 
 	for i := int(0); i < 32; i++ {
-		json.MemRoot[i] = strconv.FormatUint(uint64(s.MemRoot[i]), 10)
-		json.Registers[i] = strconv.FormatUint(uint64(s.Registers[i]), 10)
+		json.MemRoot[i] = strconv.FormatUint(uint64(s.curState.MemRoot[i]), 10)
+		json.Registers[i] = strconv.FormatUint(uint64(s.curState.Registers[i]), 10)
+		json.NewMemRoot[i] = strconv.FormatUint(uint64(s.nextState.MemRoot[i]), 10)
+		json.NewRegisters[i] = strconv.FormatUint(uint64(s.nextState.Registers[i]), 10)
 	}
 
 	for i := int(0); i < 32*28; i++ {
