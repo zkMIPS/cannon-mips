@@ -11,6 +11,7 @@ import (
 
 const (
 	sysGetpid    = 4020
+	sysGetgid    = 4047
 	sysMmap      = 4090
 	sysBrk       = 4045
 	sysClone     = 4120
@@ -57,6 +58,14 @@ func (m *InstrumentedState) handleSyscall() error {
 
 	//fmt.Printf("syscall: %d\n", syscallNum)
 	switch syscallNum {
+	case sysGetgid:
+		if m.ignored {
+			m.ignored_steps += m.state.Step - m.saved_step
+			m.ignored = false
+		} else {
+			m.ignored = true
+			m.saved_step = m.state.Step
+		}
 	case sysGetpid:
 		oracle_hash := m.state.Memory.GetPreImageHash()
 		hash := common.BytesToHash(oracle_hash)

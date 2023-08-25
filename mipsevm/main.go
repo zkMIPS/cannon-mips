@@ -99,6 +99,8 @@ func start_elf(path string) {
 		}
 
 	}
+
+	fmt.Println("Can ignore ", goState.getIgnoredStep(), " instructions")
 	end := time.Now()
 	delta := end.Sub(start)
 	fmt.Println("test took", delta, ",", state.Step, "instructions, ", delta/time.Duration(state.Step), "per instruction")

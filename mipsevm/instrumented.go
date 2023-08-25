@@ -28,8 +28,11 @@ type InstrumentedState struct {
 	// offset we last read from, or max uint32 if nothing is read this step
 	lastPreimageOffset uint32
 
-	blockroot string
-	debug     bool
+	blockroot     string
+	debug         bool
+	ignored_steps uint64
+	ignored       bool
+	saved_step    uint64
 }
 
 const (
@@ -62,6 +65,10 @@ func (m *InstrumentedState) SetBlockRoot(root string) {
 
 func (m *InstrumentedState) SetDebug(debug bool) {
 	m.debug = debug
+}
+
+func (m *InstrumentedState) getIgnoredStep() uint64 {
+	return m.ignored_steps
 }
 
 func (m *InstrumentedState) Step(proof bool) (wit *StepWitness, err error) {
