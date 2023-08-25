@@ -3,9 +3,10 @@ package main
 import (
 	"encoding/hex"
 	"fmt"
+	"math/big"
 
-	"golang.org/x/crypto/blake2s"
-	//"pedersen-go"
+	"github.com/iden3/go-iden3-crypto/poseidon"
+	//"golang.org/x/crypto/blake2s"
 )
 
 type Page [PageSize]byte
@@ -49,6 +50,20 @@ func (p *CachedPage) InvalidateFull() {
 	p.Ok = [PageSize / 32]bool{} // reset everything to false
 }
 
+const qString = "21888242871839275222246405745257275088548364400416034343698204186575808495617"
+
+// Q is the order of the integer field (Zq) that fits inside the SNARK.
+var Q, _ = new(big.Int).SetString(qString, 10)
+
+func convertBytesToFeild(data []byte) *big.Int {
+	a := big.NewInt(0)
+	a.SetBytes(data)
+	if a.Cmp(Q) != -1 {
+		a.Rem(a, Q)
+	}
+	return a
+}
+
 func (p *CachedPage) MerkleRoot() [32]byte {
 	// hash the bottom layer
 	for i := uint64(0); i < PageSize; i += 64 {
@@ -57,7 +72,24 @@ func (p *CachedPage) MerkleRoot() [32]byte {
 			continue
 		}
 		//p.Cache[j] = crypto.Keccak256Hash(p.Data[i : i+64])
-		p.Cache[j] = blake2s.Sum256(p.Data[i : i+64])
+		//p.Cache[j] = blake2s.Sum256(p.Data[i : i+64])
+		a := convertBytesToFeild(p.Data[i : i+32])
+		b := convertBytesToFeild(p.Data[i+32 : i+64])
+		outInt, err := poseidon.Hash([]*big.Int{a, b})
+		if err != nil {
+			fmt.Println(err, p.Data[i:i+64])
+		}
+
+		bytes := outInt.Bytes()
+		out := [32]byte{}
+
+		if len(bytes) >= 32 {
+			copy(out[:], bytes[0:32])
+		} else {
+			copy(out[32-len(bytes):], bytes)
+		}
+
+		p.Cache[j] = out
 		/*point, err := pedersen.PedersenHashBytes("test", p.Data[i:i+64])
 
 		if err != nil {
