@@ -5,6 +5,7 @@ import (
 	"database/sql/driver"
 	"encoding/binary"
 	"errors"
+	"fmt"
 	"log"
 	"strconv"
 
@@ -187,12 +188,12 @@ func (s *trace) insertToDB() {
 		json.Memory_proof[i] = strconv.FormatUint(uint64(s.Memory_proof[i]), 10)
 	}
 
+	fmt.Println(s.curState, " ", s.Insn_proof, " ", s.Memory_proof, " ", s.nextState)
 	_, err := DB.Exec("INSERT INTO f_traces (f_trace) VALUES($1)", json)
 
 	if err != nil {
 		log.Fatal(err)
 	}
-
 }
 
 func (s *State) EncodeWitness() []byte {
