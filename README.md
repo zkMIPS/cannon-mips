@@ -26,7 +26,8 @@ mkdir -p /tmp/cannon
 minigeth/go-ethereum $TRANSITION_BLOCK
 
 # generate MIPS traces
-mipsevm/mipsevm -b $TRANSITION_BLOCK
+cd mipsevm
+mipsevm -b $TRANSITION_BLOCK
 ```
 
 ## Options for mipsevm
