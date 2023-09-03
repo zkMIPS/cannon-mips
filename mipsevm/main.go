@@ -16,11 +16,12 @@ var (
 	program    string
 	totalsteps uint
 	rate       int
+	debug      bool
 )
 
 func usage() {
 	fmt.Fprintf(os.Stderr, `
-Usage: mipsevm [-b block] [-e filename] [-s stepNum] [-r rate]
+Usage: [-h] [-b blocknum] [-e elf-path] [-s stepnum] [-r rate] [-d]
 
 Options:
 `)
@@ -28,12 +29,13 @@ Options:
 }
 
 func init() {
-	flag.BoolVar(&h, "h", false, "this help")
+	flag.BoolVar(&h, "h", false, "help info")
 
 	flag.StringVar(&block, "b", "", "blocknum for minigeth")
-	flag.StringVar(&program, "e", "", "whole program elf path")
-	flag.UintVar(&totalsteps, "s", 0xFFFFFFFF, "program steps")
+	flag.StringVar(&program, "e", "", "MIPS program elf path(default minigeth when blocknum is specified)")
+	flag.UintVar(&totalsteps, "s", 0xFFFFFFFF, "program steps number to be run (default 4294967295)")
 	flag.IntVar(&rate, "r", 100000, "randomly generate trace rate (1/100000)")
+	flag.BoolVar(&debug, "d", false, "enable debug output for the instrution sequences")
 
 	// 改变默认的 Usage
 	flag.Usage = usage
@@ -76,7 +78,7 @@ func start_elf(path string) {
 
 	goState.SetBlockRoot(block_root)
 	goState.InitialMemRoot()
-	//goState.SetDebug(true)
+	goState.SetDebug(debug)
 
 	err = InitDB()
 
