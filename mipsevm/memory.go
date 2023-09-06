@@ -5,11 +5,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"math/big"
 	"math/bits"
 	"sort"
 
-	"github.com/iden3/go-iden3-crypto/poseidon"
+	"github.com/ethereum/go-ethereum/crypto"
 )
 
 // Note: 2**12 = 4 KiB, the min phys page size in the Go runtime.
@@ -23,22 +22,7 @@ const (
 )
 
 func HashPair(left, right [32]byte) [32]byte {
-	a := convertBytesToFeild(left[:])
-	b := convertBytesToFeild(right[:])
-
-	outInt, err := poseidon.Hash([]*big.Int{a, b})
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	bytes := outInt.Bytes()
-	out := [32]byte{}
-
-	if len(bytes) >= 32 {
-		copy(out[:], bytes[0:32])
-	} else {
-		copy(out[32-len(bytes):], bytes)
-	}
+	out := crypto.Keccak256Hash(left[:], right[:])
 
 	return out
 }

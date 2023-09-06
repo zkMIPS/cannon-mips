@@ -5,8 +5,7 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/iden3/go-iden3-crypto/poseidon"
-	//"golang.org/x/crypto/blake2s"
+	"github.com/ethereum/go-ethereum/crypto"
 )
 
 type Page [PageSize]byte
@@ -72,23 +71,7 @@ func (p *CachedPage) MerkleRoot() [32]byte {
 			continue
 		}
 
-		a := convertBytesToFeild(p.Data[i : i+32])
-		b := convertBytesToFeild(p.Data[i+32 : i+64])
-		outInt, err := poseidon.Hash([]*big.Int{a, b})
-		if err != nil {
-			fmt.Println(err, p.Data[i:i+64])
-		}
-
-		bytes := outInt.Bytes()
-		out := [32]byte{}
-
-		if len(bytes) >= 32 {
-			copy(out[:], bytes[0:32])
-		} else {
-			copy(out[32-len(bytes):], bytes)
-		}
-
-		p.Cache[j] = out
+		p.Cache[j] = crypto.Keccak256Hash(p.Data[i : i+64])
 		p.Ok[j] = true
 	}
 
