@@ -92,7 +92,8 @@ func start_elf(path string) {
 
 	if err != nil {
 		fmt.Println(err)
-		return
+		rate = 0
+		//return
 	}
 
 	start := time.Now()
