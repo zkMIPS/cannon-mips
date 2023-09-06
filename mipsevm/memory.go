@@ -9,7 +9,6 @@ import (
 	"math/bits"
 	"sort"
 
-	//"golang.org/x/crypto/blake2s"
 	"github.com/iden3/go-iden3-crypto/poseidon"
 )
 
@@ -24,8 +23,6 @@ const (
 )
 
 func HashPair(left, right [32]byte) [32]byte {
-	//out := crypto.Keccak256Hash(left[:], right[:])
-
 	a := convertBytesToFeild(left[:])
 	b := convertBytesToFeild(right[:])
 

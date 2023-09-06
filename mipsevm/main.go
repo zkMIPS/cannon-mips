@@ -68,9 +68,17 @@ func start_elf(path string) {
 	}
 
 	if block != "" {
-		block_root = fmt.Sprintf("/tmp/cannon/0_%s", block)
+		basedir := os.Getenv("BASEDIR")
+		if len(basedir) == 0 {
+			basedir = "/tmp/cannon"
+		}
+		block_root = fmt.Sprintf("%s/0_%s", basedir, block)
 		block_input := fmt.Sprintf("%s/input", block_root)
 		state, err = LoadMappedFile(state, block_input, 0x30000000)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
 	}
 
 	var stdOutBuf, stdErrBuf bytes.Buffer
@@ -113,48 +121,6 @@ func start_elf(path string) {
 
 func start_minigeth() {
 	start_elf("minigeth")
-	/*
-		s := &State{
-			PC:        0,
-			NextPC:    4,
-			HI:        0,
-			LO:        0,
-			Heap:      0x20000000,
-			Registers: [32]uint32{},
-			Memory:    NewMemory(),
-			ExitCode:  0,
-			Exited:    false,
-			Step:      0,
-		}
-		s, err := LoadMappedFile(s, "minigeth.bin", 0)
-
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-		block_root := fmt.Sprintf("/tmp/cannon/0_%s", block)
-		block_input := fmt.Sprintf("%s/input", block_root)
-		s, err = LoadMappedFile(s, block_input, 0x30000000)
-
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-
-		var stdOutBuf, stdErrBuf bytes.Buffer
-		goState := NewInstrumentedState(s, nil, io.MultiWriter(&stdOutBuf, os.Stdout), io.MultiWriter(&stdErrBuf, os.Stderr))
-		goState.SetBlockRoot(block_root)
-		goState.SetDebug(true)
-
-		for !goState.IsExited() {
-			_, err = goState.StepTrace()
-
-			if err != nil {
-				fmt.Println(err)
-				return
-			}
-		}
-	*/
 }
 
 func main() {
