@@ -5,12 +5,12 @@ import (
 	"database/sql/driver"
 	"encoding/binary"
 	"errors"
-	"fmt"
 	"log"
+	"os"
 	"strconv"
 
 	_ "github.com/lib/pq"
-	//"database/sql"
+
 	"encoding/json"
 
 	"github.com/ethereum/go-ethereum/common"
@@ -57,9 +57,6 @@ type traceState struct {
 
 	Registers [32]uint32 `json:"regs"`
 
-	//PreimageKey   [32]byte `json:"preimageKey"`
-	//PreimageOffset uint32      `json:"preimageOffset"` // note that the offset includes the 8-byte length prefix
-
 	Heap uint32 `json:"heap"` // to handle mmap growth
 
 	ExitCode uint8     `json:"exitCode"`
@@ -85,9 +82,6 @@ type traceJson struct {
 
 	Registers [32]string `json:"regs"`
 
-	//PreimageKey   [32]byte `json:"preimageKey"`
-	//PreimageOffset uint32      `json:"preimageOffset"` // note that the offset includes the 8-byte length prefix
-
 	Heap string `json:"heap"` // to handle mmap growth
 
 	ExitCode     string          `json:"exitCode"`
@@ -104,9 +98,6 @@ type traceJson struct {
 	NewHI string `json:"newHi"`
 
 	NewRegisters [32]string `json:"newRegs"`
-
-	//PreimageKey   [32]byte `json:"preimageKey"`
-	//PreimageOffset uint32      `json:"preimageOffset"` // note that the offset includes the 8-byte length prefix
 
 	NewHeap string `json:"newHeap"` // to handle mmap growth
 
@@ -135,8 +126,13 @@ func (a *traceJson) Scan(value interface{}) error {
 }
 
 func InitDB() (err error) {
-	// ec2-46-51-227-198.ap-northeast-1.compute.amazonaws.com
-	db, err := sql.Open("postgres", "sslmode=disable user=postgres password=mipszero host=46.51.227.198 port=5432 dbname=zkmips")
+	postconfig := os.Getenv("POSTGRES_CONFIG")
+
+	if len(postconfig) == 0 {
+		postconfig = "sslmode=disable user=postgres password=postgres host=localhost port=5432 dbname=postgres"
+	}
+
+	db, err := sql.Open("postgres", postconfig)
 	if err != nil {
 		return err
 	}
@@ -188,7 +184,6 @@ func (s *trace) insertToDB() {
 		json.Memory_proof[i] = strconv.FormatUint(uint64(s.Memory_proof[i]), 10)
 	}
 
-	fmt.Println(s.curState, " ", s.Insn_proof, " ", s.Memory_proof, " ", s.nextState)
 	_, err := DB.Exec("INSERT INTO f_traces (f_trace) VALUES($1)", json)
 
 	if err != nil {

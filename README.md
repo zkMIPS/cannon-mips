@@ -27,7 +27,7 @@ minigeth/go-ethereum $TRANSITION_BLOCK
 
 # generate MIPS traces
 cd mipsevm
-mipsevm -b $TRANSITION_BLOCK
+./mipsevm -b $TRANSITION_BLOCK
 ```
 
 ## Options for mipsevm
@@ -47,6 +47,20 @@ Options:
   -s <stepnum>   program steps number to be run (default 4294967295)
   -r <rate>      randomly generate trace rate (1/100000) (default 100000)
   -d             enable debug output for the instrution sequences
+```
+
+Example:
+
+- Generate records for the first 1000 instructions of block 13284469
+
+```
+mipsevm -b 13284469 -s 1000   //[-r 100000] and [-e minigeth] can be used as default
+```
+
+- Generate records with 1% rate for the first 1000 instructions of block 13284469
+
+```
+mipsevm -b 13284469 -s 1000 -r 1000
 ```
 
 ## License
