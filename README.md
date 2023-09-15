@@ -9,22 +9,7 @@ mipsevm -- A MIPS VM to generate execution records for MIPS program
 
 ## Prerequisite
 
--   Install [Go](https://go.dev/doc/install)
--   Install Make
--   Install [Postgres](https://www.postgresql.org/download/)
--   Install [pgadmin(optional)](https://www.pgadmin.org/download/)
-
-- Create trace table:
-
-```
-DROP TABLE IF EXISTS f_traces;
-CREATE TABLE f_traces
-(
-    f_id           bigserial PRIMARY KEY,
-    f_trace        jsonb                    NOT NULL,
-    f_created_at   TIMESTAMP with time zone NOT NULL DEFAULT now()
-);
-```
+Reference [prerequisite of mips_circuit](https://github.com/zkMIPS/mips_circuit#prerequisite)
 
 ## Build
 
@@ -38,17 +23,17 @@ make build
 The following commands should be run from the root directory unless otherwise specified:
 
 ```
-# compute the transition from 13284469 -> 13284470 on PC
+#Example: compute the transition from 13284469 -> 13284470 on PC
 $ mkdir -p /tmp/cannon
-$ minigeth/go-ethereum <TRANSITION_BLOCK> # such as 13284469
+$ minigeth/go-ethereum 13284469
 
-$ export BASEDIR=<path_to_block_preimage_files>  # default /tmp/cannon
+$ export BASEDIR=/tmp/cannon
 $ export POSTGRES_CONFIG="sslmode=<sslmode> user=<user> password=<password> host=<ip> port=<port> dbname=<db>"
    # default: sslmode=disable user=postgres password=postgres host=localhost port=5432 dbname=postgres
 
-# generate MIPS traces
+# generate 1 MIPS trace
 $ cd mipsevm
-$ ./mipsevm -b <TRANSITION_BLOCK> -s <stepnum> -r <rate>
+$ ./mipsevm -b 13284469 -s 1
 ```
 
 ## Options for mipsevm
