@@ -25,19 +25,21 @@ The following commands should be run from the root directory unless otherwise sp
 ```
 #Example: compute the transition from 13284469 -> 13284470 on PC
 $ export BASEDIR=/tmp/cannon
-$ export NODE=<mainnet-node> #default: https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161
-$ export POSTGRES_CONFIG="sslmode=<sslmode> user=<user> password=<password> host=<ip> port=<port> dbname=<db>"
-   # default: sslmode=disable user=postgres password=postgres host=localhost port=5432 dbname=postgres
+
+$ export NODE=<mainnet-node> # default: https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161
 
 $ mkdir -p /tmp/cannon
 $ minigeth/go-ethereum 13284469
+
+$ export POSTGRES_CONFIG="sslmode=<sslmode> user=<user> password=<password> host=<ip> port=<port> dbname=<db>"
+   # default: sslmode=disable user=postgres password=postgres host=localhost port=5432 dbname=postgres
 
 # generate 1 MIPS trace
 $ cd mipsevm
 $ ./mipsevm -b 13284469 -s 1
 ```
 
-**NOTE: You may need to replace the default URL with your own mainnet node url, such as register one from https://www.alchemy.com/**
+**NOTE: You may cannot access the default NODE URL and trigger nil pointer dereference fault when running "minigeth/go-ethereum" ,   you can register one free NODE from https://www.alchemy.com/ to replace it**
 
 ## Options for mipsevm
 
