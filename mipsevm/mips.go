@@ -515,6 +515,16 @@ func (m *InstrumentedState) Printcode(inst uint32) {
 	}
 }
 
+func (m *InstrumentedState) KeccakF1600() error {
+	addr := m.state.Memory.GetMemory(m.state.Registers[29] + 4)
+	data := m.state.Memory.GetKeccakF1600(addr)
+	keccakF1600(&data)
+	m.state.Memory.SetKeccakF1600(addr, data)
+	m.state.PC = m.state.NextPC
+	m.state.NextPC = m.state.NextPC + 4
+	return nil
+}
+
 func (m *InstrumentedState) mipsStep() error {
 	if m.state.Exited {
 		return nil
@@ -537,9 +547,12 @@ func (m *InstrumentedState) mipsStep() error {
 	if opcode == 2 || opcode == 3 {
 		// TODO likely bug in original code: MIPS spec says this should be in the "current" region;
 		// a 256 MB aligned region (i.e. use top 4 bits of branch delay slot (pc+4))
-		linkReg := uint32(0)
-		if opcode == 3 {
-			linkReg = 31
+		linkReg := uint32(31)
+		if opcode == 2 {
+			linkReg = 0
+			if insn&0x03FFFFFF == 0 {
+				return m.KeccakF1600()
+			}
 		}
 		return m.handleJump(linkReg, SE(insn&0x03FFFFFF, 26)<<2)
 	}

@@ -110,7 +110,6 @@ func start_elf(path string) {
 		if step >= totalsteps {
 			break
 		}
-
 	}
 
 	fmt.Println("Can ignore ", goState.getIgnoredStep(), " instructions")

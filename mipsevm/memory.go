@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/binary"
 	"encoding/json"
 	"fmt"
@@ -233,6 +234,42 @@ func (m *Memory) GetMemory(addr uint32) uint32 {
 	}
 	pageAddr := addr & PageAddrMask
 	return binary.BigEndian.Uint32(p.Data[pageAddr : pageAddr+4])
+}
+
+func (m *Memory) GetKeccakF1600(addr uint32) [25]uint64 {
+	// addr must be aligned to 4 bytes
+	var result [25]uint64
+	if addr&0x7 != 0 {
+		panic(fmt.Errorf("unaligned memory access: %x", addr))
+	}
+	p, ok := m.pageLookup(addr >> PageAddrSize)
+	if !ok {
+		panic(fmt.Errorf("memory access fault: %x", addr))
+	}
+	pageAddr := addr & PageAddrMask
+	result[0] = binary.BigEndian.Uint64(p.Data[pageAddr : pageAddr+8])
+	pageAddr += 8
+	for i := 1; i < 25; i++ {
+		if addr == 4096 {
+			p, ok = m.pageLookup((addr >> PageAddrSize) + 1)
+			if !ok {
+				panic(fmt.Errorf("memory access fault: %x", addr))
+			}
+			pageAddr = 0
+		}
+		result[i] = binary.BigEndian.Uint64(p.Data[pageAddr : pageAddr+8])
+		pageAddr += 8
+	}
+	return result
+}
+
+func (m *Memory) SetKeccakF1600(addr uint32, data [25]uint64) {
+	// addr must be aligned to 4 bytes
+	b := make([]byte, 0, 200)
+	for i := 0; i < 25; i++ {
+		b = binary.BigEndian.AppendUint64(b, data[i])
+	}
+	m.SetMemoryRange(addr, bytes.NewReader(b))
 }
 
 func (m *Memory) GetPreImageHash() []byte {

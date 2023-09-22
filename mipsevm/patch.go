@@ -95,6 +95,19 @@ func PatchGo(f *elf.File, st *State) error {
 			})); err != nil {
 				return fmt.Errorf("failed to patch Go runtime.gcenable: %w", err)
 			}
+		case "golang.org/x/crypto/sha3.keccakF1600":
+			fmt.Printf("patch keccakF1600 at %x\n", s.Value)
+			// MIPS32 patch: ret (pseudo instruction)
+			// 08000000 = j 0 = ret (pseudo instruction)
+			// 00000000 = nop (executes with delay-slot, but does nothing)
+			if err := st.Memory.SetMemoryRange(uint32(s.Value), bytes.NewReader([]byte{
+				0x08, 0, 0, 0,
+				0, 0, 0, 0,
+				0x03, 0xe0, 0x00, 0x08,
+				0, 0, 0, 0,
+			})); err != nil {
+				return fmt.Errorf("failed to patch Go golang.org/x/crypto/sha3.keccakF1600//: %w", err)
+			}
 		case "runtime.MemProfileRate":
 			if err := st.Memory.SetMemoryRange(uint32(s.Value), bytes.NewReader(make([]byte, 4))); err != nil { // disable mem profiling, to avoid a lot of unnecessary floating point ops
 				return err
