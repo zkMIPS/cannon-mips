@@ -13,7 +13,6 @@ Reference [prerequisite of mips_circuit](https://github.com/zkMIPS/mips_circuit#
 
 ## Build
 
-
 ```
 make build
 ```
