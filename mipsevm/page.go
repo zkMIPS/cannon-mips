@@ -4,8 +4,7 @@ import (
 	"encoding/hex"
 	"fmt"
 	"math/big"
-
-	"github.com/ethereum/go-ethereum/crypto"
+	//"github.com/ethereum/go-ethereum/crypto"
 )
 
 type Page [PageSize]byte
@@ -71,7 +70,8 @@ func (p *CachedPage) MerkleRoot() [32]byte {
 			continue
 		}
 
-		p.Cache[j] = crypto.Keccak256Hash(p.Data[i : i+64])
+		copy(p.Cache[j][:], p.Data[i:i+32])
+
 		p.Ok[j] = true
 	}
 

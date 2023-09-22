@@ -8,8 +8,7 @@ import (
 	"io"
 	"math/bits"
 	"sort"
-
-	"github.com/ethereum/go-ethereum/crypto"
+	//"github.com/ethereum/go-ethereum/crypto"
 )
 
 // Note: 2**12 = 4 KiB, the min phys page size in the Go runtime.
@@ -23,8 +22,8 @@ const (
 )
 
 func HashPair(left, right [32]byte) [32]byte {
-	out := crypto.Keccak256Hash(left[:], right[:])
-
+	//out := crypto.Keccak256Hash(left[:], right[:])
+	out := left
 	return out
 }
 
