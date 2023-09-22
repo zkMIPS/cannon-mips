@@ -14,7 +14,7 @@ var (
 	h          bool
 	block      string
 	program    string
-	totalsteps uint
+	totalsteps uint64
 	rate       int
 	debug      bool
 )
@@ -33,7 +33,7 @@ func init() {
 
 	flag.StringVar(&block, "b", "", "blocknum for minigeth")
 	flag.StringVar(&program, "e", "", "MIPS program elf path(default minigeth when blocknum is specified)")
-	flag.UintVar(&totalsteps, "s", 0xFFFFFFFF, "program steps number to be run (default 4294967295)")
+	flag.Uint64Var(&totalsteps, "s", 0xFFFFFFFFFFFFFFFF, "program steps number to be run (default 0xFFFFFFFFFFFFFFFF)")
 	flag.IntVar(&rate, "r", 100000, "randomly generate trace rate (1/100000)")
 	flag.BoolVar(&debug, "d", false, "enable debug output for the instrution sequences")
 
@@ -97,7 +97,7 @@ func start_elf(path string) {
 	}
 
 	start := time.Now()
-	step := uint(0)
+	step := uint64(0)
 	for !goState.IsExited() {
 
 		_, err = goState.StepTrace(rate)
