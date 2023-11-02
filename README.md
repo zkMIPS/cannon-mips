@@ -1,3 +1,5 @@
+<a>English</a>    <a href='./README_CN.md' >中文</a> 
+
 The cannon-mips is a MIPS VM (ported from cannon project) to generate execution records for MIPS programs.
 
 ## Directory Layout
